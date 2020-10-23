@@ -89,6 +89,42 @@
     let userY = 0;
 
 
+    let userId = null;
+
+    let cubes = [];
+
+
+
+
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    document.body.appendChild( renderer.domElement );
+    //
+    // var geometry = new THREE.BoxGeometry();
+    // var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+    // var cube = new THREE.Mesh( geometry, material );
+    // scene.add( cube );
+    camera.position.z = 10;
+
+
+    var animate = function () {
+        requestAnimationFrame( animate );
+
+        cubes.forEach((value, index) => {
+            cubes[index].cube.position.x = cubes[index].position.userX;
+            cubes[index].cube.position.y = cubes[index].position.userY;
+        });
+
+        renderer.render( scene, camera );
+    };
+
+    animate();
+
+
+
     $(function () {
         var socket = io();
 
@@ -99,60 +135,48 @@
             $('#m').val('');
             return false;
         });
+        socket.on('new-user', function(msg) {
+
+            userId = msg.userId;
+            cubes[userId] = {};
+
+            let color = Math.floor(Math.random() * 89) + 10;
+
+            var geometry = new THREE.BoxGeometry();
+            var material = new THREE.MeshBasicMaterial( { color: '0x00ff' + color } );
+            var cube = new THREE.Mesh( geometry, material );
+            cubes[userId].cube = cube;
+            scene.add( cube );
+        });
+        socket.on('playing-users', function (msg) {
+            /*TODO gelen butun oyunculari ekrana ekle*/
+        })
         socket.on('user-position', function(msg){
-            userX = msg.userx;
-            userY = msg.usery;
+            let cube_id = msg.userId;
+            cubes[cube_id].position = {userX: msg.userx, userY: msg.usery}
+
         });
         socket.on('last-message', function(msg){
-            console.log(msg);
             $(document).find('#info').text(msg.lastMessage);
         });
         $(document).keypress('keypress', function(e) {
 
             switch(e.keyCode) {
                 case 97:
-                    socket.emit("go-left", "Emitted");
+                    socket.emit("go-left", {userId: userId});
                     break;
                 case 115:
-                    socket.emit("go-down", "Emitted");
+                    socket.emit("go-down", {userId: userId});
                     break;
                 case 100:
-                    socket.emit("go-right", "Emitted");
+                    socket.emit("go-right", {userId: userId});
                     break;
                 case 119:
-                    socket.emit("go-up", "Emitted");
+                    socket.emit("go-up", {userId: userId});
                     break;
             }
         })
     });
-
-
-    var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-
-    var renderer = new THREE.WebGLRenderer();
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    document.body.appendChild( renderer.domElement );
-
-    var geometry = new THREE.BoxGeometry();
-    var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-    var cube = new THREE.Mesh( geometry, material );
-    scene.add( cube );
-
-    camera.position.z = 10;
-    var text = new THREE.TextGeometry( "Selamke" );
-    scene.add(text);
-
-    var animate = function () {
-        requestAnimationFrame( animate );
-
-        cube.position.x = userX;
-        cube.position.y = userY;
-
-        renderer.render( scene, camera );
-    };
-
-    animate();
 
 </script>
 </body>

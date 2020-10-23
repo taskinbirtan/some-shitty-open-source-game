@@ -12,6 +12,9 @@ app.use("/public", express.static(path.join(__dirname, 'public')));
 let userx = 0;
 let usery = 0;
 
+let users = [];
+
+
 let lastMessage = '';
 
 app.get('/', (req, res) => {
@@ -19,33 +22,39 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-    console.log('a user connected');
 
-    io.emit('user-position', {userx: userx, usery:usery})
+
+    let randomId = Math.floor(Math.random() * 100) + 1;
+    users[randomId] = {};
+    users[randomId].userx = 0;
+    users[randomId].usery = 0;
+    users[randomId].userId = randomId;
+
+
+    io.emit('new-user', {userId: randomId, userx: users[randomId].userx, usery: users[randomId].usery});
+
+    io.emit('user-position', users[randomId])
 
     socket.on('chat message', (msg) => {
         lastMessage = msg;
         io.emit('last-message', {lastMessage: lastMessage})
     });
     socket.on('go-right', (msg) => {
-        userx = userx + 0.1;
-        io.emit('user-position', {userx: userx, usery:usery})
-        console.log('position: ' + userx + ' ' + usery)
+        users[randomId].userx += 0.1;
+        io.emit('user-position', users[randomId])
     });
     socket.on('go-left', (msg) => {
-        userx -= 0.1;
-        io.emit('user-position', {userx: userx, usery:usery})
-        console.log('position: ' + userx + ' ' + usery)
+        users[randomId].userx -= 0.1;
+
+        io.emit('user-position', users[randomId])
     });
     socket.on('go-up', (msg) => {
-        usery = usery  + 0.1;
-        io.emit('user-position', {userx: userx, usery:usery})
-        console.log('position: ' + userx + ' ' + usery)
+        users[randomId].usery += 0.1;
+        io.emit('user-position', users[randomId])
     });
     socket.on('go-down', (msg) => {
-        usery = usery - 0.1;
-        io.emit('user-position', {userx: userx, usery:usery})
-        console.log('position: ' + userx + ' ' + usery)
+        users[randomId].usery -= 0.1;
+        io.emit('user-position', users[randomId])
     });
 });
 
