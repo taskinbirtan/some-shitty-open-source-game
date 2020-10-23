@@ -23,15 +23,20 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
 
-
     let randomId = Math.floor(Math.random() * 100) + 1;
+
+
+    let oldUsers = users;
+
     users[randomId] = {};
     users[randomId].userx = 0;
     users[randomId].usery = 0;
     users[randomId].userId = randomId;
 
+    console.log(users);
 
-    io.emit('new-user', {userId: randomId, userx: users[randomId].userx, usery: users[randomId].usery});
+
+    io.emit('new-user', {userId: randomId, userx: users[randomId].userx, usery: users[randomId].usery, oldUsers: oldUsers});
 
     io.emit('user-position', users[randomId])
 

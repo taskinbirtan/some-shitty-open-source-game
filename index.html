@@ -136,6 +136,27 @@
             return false;
         });
         socket.on('new-user', function(msg) {
+            msg.oldUsers.forEach((value, index) => {
+
+                console.log(value);
+                if(value != null) {
+                    if(cubes[value.userId] == null) {
+                        let color = Math.floor(Math.random() * 89) + 10;
+
+                        var geometry = new THREE.BoxGeometry();
+                        var material = new THREE.MeshBasicMaterial( { color: '0x00ff' + color } );
+                        var cube = new THREE.Mesh( geometry, material );
+                        cube.position.x = value.userx;
+                        cube.position.y = value.usery;
+                        cubes[value.userId] = {};
+                        cubes[value.userId].position = {}
+                        cubes[value.userId].position = {userX: value.userx, userY: value.usery}
+                        cubes[value.userId].cube = cube;
+                        scene.add( cube );
+                        console.log("eskiler eklendi mi ?")
+                    }
+                }
+            });
 
             userId = msg.userId;
             cubes[userId] = {};
