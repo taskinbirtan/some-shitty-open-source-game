@@ -153,7 +153,7 @@
                         cubes[value.userId].position = {userX: value.userx, userY: value.usery}
                         cubes[value.userId].cube = cube;
                         scene.add( cube );
-                        console.log("eskiler eklendi mi ?")
+
                     }
                 }
             });
@@ -169,9 +169,6 @@
             cubes[userId].cube = cube;
             scene.add( cube );
         });
-        socket.on('playing-users', function (msg) {
-            /*TODO gelen butun oyunculari ekrana ekle*/
-        })
         socket.on('user-position', function(msg){
             let cube_id = msg.userId;
             cubes[cube_id].position = {userX: msg.userx, userY: msg.usery}
