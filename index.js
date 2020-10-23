@@ -12,6 +12,8 @@ app.use("/public", express.static(path.join(__dirname, 'public')));
 let userx = 0;
 let usery = 0;
 
+let lastMessage = '';
+
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
@@ -22,7 +24,8 @@ io.on('connection', (socket) => {
     io.emit('user-position', {userx: userx, usery:usery})
 
     socket.on('chat message', (msg) => {
-        console.log('message: ' + msg);
+        lastMessage = msg;
+        io.emit('last-message', {lastMessage: lastMessage})
     });
     socket.on('go-right', (msg) => {
         userx = userx + 0.1;

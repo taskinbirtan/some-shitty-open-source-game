@@ -48,17 +48,30 @@
         #messages li:nth-child(odd) {
             background: #eee;
         }
+
+        #info {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            z-index: 100;
+            display:block;
+            color: white;
+        }
     </style>
 </head>
 <body>
 <ul id="messages"></ul>
 
-<div>
-    <button data-val="go-right">Go Right</button>
-    <button data-val="go-left">Go Left</button>
-    <button data-val="go-up">Go Up</button>
-    <button data-val="go-down">Go Down</button>
-</div>
+<!--<div>-->
+<!--    <button data-val="go-right">Go Right</button>-->
+<!--    <button data-val="go-left">Go Left</button>-->
+<!--    <button data-val="go-up">Go Up</button>-->
+<!--    <button data-val="go-down">Go Down</button>-->
+<!--</div>-->
+
+<div id="info">Description</div>
+
 <form action="">
     <input id="m" autocomplete="off"/>
     <button>Send</button>
@@ -89,9 +102,12 @@
         socket.on('user-position', function(msg){
             userX = msg.userx;
             userY = msg.usery;
-
         });
-        $(document).on('keypress', function(e) {
+        socket.on('last-message', function(msg){
+            console.log(msg);
+            $(document).find('#info').text(msg.lastMessage);
+        });
+        $(document).keypress('keypress', function(e) {
 
             switch(e.keyCode) {
                 case 97:
@@ -107,7 +123,6 @@
                     socket.emit("go-up", "Emitted");
                     break;
             }
-
         })
     });
 
@@ -125,6 +140,8 @@
     scene.add( cube );
 
     camera.position.z = 10;
+    var text = new THREE.TextGeometry( "Selamke" );
+    scene.add(text);
 
     var animate = function () {
         requestAnimationFrame( animate );
@@ -136,6 +153,7 @@
     };
 
     animate();
+
 </script>
 </body>
 </html>
